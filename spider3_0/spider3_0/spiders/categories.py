@@ -3,6 +3,13 @@ import scrapy
 from web_poet import ItemPage
 
 
+
+## TO RUN SPIDER:
+
+## RUN FROM spider3.0\spider3_0 DIRECTORY
+
+##  scrapy crawl categories -a url=[WEBSITE] -O "spider3_0/configs\[STORENAME]Config.json"
+
 class OrCategoryExtractor(scrapy.Spider):
     name = "categories"
 
