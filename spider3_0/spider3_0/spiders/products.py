@@ -51,9 +51,10 @@ class ProductsExtractor(scrapy.Spider):
         #     item = dict(item)
 
         # Append spider contextual metadata passed down through cb_kwargs
-        item["category"] = category
+        item["type"] = category
         item["gender"] = gender
-        item["url"] = response.url
+        item["productLink"] = response.url
+
 
         yield item
         
@@ -64,7 +65,7 @@ class ProductsExtractor(scrapy.Spider):
         for url in products["urls"]:
             # print(url)
             yield scrapy.Request(url, callback=self.parseProduct, cb_kwargs={"category": category, "gender":gender})
-
+            
         # If the page object found a next page link, follow it to collect more product links.
         next_page = products.get("next_page")
         

@@ -1,4 +1,4 @@
-from CategoryClassifier import resolve_category
+from spider3_0.CategoryClassifier import resolve_category
 from scrapling import Selector
 from web_poet import handle_urls
 from web_poet.pages import ItemPage, WebPage
@@ -30,6 +30,7 @@ class OrCatsPage(WebPage, ItemPage):
         # No match: the site changed, so relocate the saved element instead.
         if not candidates:
             candidates = page.css(".site-nav__details", adaptive=True)
+            print("ADAPTIVE NOW NOT FOUND BEFORE")
 
         # Nothing saved and nothing found: return an empty result.
         if not candidates:

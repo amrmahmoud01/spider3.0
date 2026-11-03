@@ -2,9 +2,9 @@ import json
 import re
 import attrs
 from web_poet import WebPage, field, handle_urls,ItemPage
+from scrapling import Selector
 
 @handle_urls(
-    # r"https?://(www\.)?or-egypt\.com/(.*/)?products/.*",
     "or-egypt.com/collections/*/products",
     instead_of=ItemPage,
     priority=300,
@@ -12,30 +12,68 @@ from web_poet import WebPage, field, handle_urls,ItemPage
 @attrs.define
 class ProductPage(WebPage):
 
-    @field
-    def title(self) -> str | None:
-        title = self.css("h1.product-single__title::text").get()
-        return title.strip() if title else None
+    def _page(self):
+        return Selector(self.html, url=self.url, adaptive=True)
 
     @field
-    def main_image(self):
-        return self.css(".product-main-slide img::attr(src)").get()
+    def name(self) -> str | None:
+        page = self._page()
+        els = page.css("h1.product-single__title", auto_save=True, identifier="product_title")
+        if not els:
+            els = page.css("h1.product-single__title", adaptive=True, identifier="product_title")
+        return els[0].text.strip() if els else None
 
+    @field
+    def imageLink(self):
+        page = self._page()
+        els = page.css(".product-main-slide img", auto_save=True, identifier="product_main_image")
+        if not els:
+            els = page.css(".product-main-slide img", adaptive=True, identifier="product_main_image")
+        src = els[0].attrib.get("src") if els else None
+        return self.urljoin(src) if src else None
     @field
     def colors(self) -> list[str]:
-        return self.css('fieldset[name="Color"] .variant-input input::attr(value)').getall()
+        page = self._page()
+        els = page.css(
+            'fieldset[name="Color"] .variant-input input',
+            auto_save=True,
+            identifier="product_color",
+        )
+        if not els:
+            els = page.css(
+                'fieldset[name="Color"] .variant-input input',
+                adaptive=True,
+                identifier="product_color",
+            )
+        return [el.attrib.get("value") for el in els if el.attrib.get("value")]
 
     @field
-    def price(self) -> str | None:
-        # On sale: the strikethrough (compare-at) price is the original price
-        compare = self.css("span[data-compare-price]::text").get()
-        if compare and compare.strip():
-            return compare.strip()
-        # Not on sale: the regular product price
-        regular = self.css("span[data-product-price]::text").get()
-        return regular.strip() if regular else None
+    def price(self) -> float | None:
+        page = self._page()
+
+        regular_els = page.css("span[data-product-price]", auto_save=True, identifier="product_price")
+        if not regular_els:
+            regular_els = page.css("span[data-product-price]", adaptive=True, identifier="product_price")
+
+        compare = page.css("span[data-compare-price]")
+        if compare and compare[0].text.strip():
+            text = compare[0].text
+        elif regular_els:
+            text = regular_els[0].text
+        else:
+            return None
+
+        match = re.search(r"\d[\d,]*(?:\.\d+)?", text)
+        return float(match.group().replace(",", "")) if match else None
 
     @field
-    def sale_price(self) -> str | None:
-        sale = self.css("span[data-product-price].on-sale::text").get()
-        return sale.strip() if sale else None
+    def salePrice(self) -> float | None:
+        sale = self._page().css("span[data-product-price].on-sale")
+        if not sale:
+            return 0
+
+        match = re.search(r"\d[\d,]*(?:\.\d+)?", sale[0].text)
+        return float(match.group().replace(",", "")) if match else None    
+    @field
+    def storeId(self):
+        return 1003

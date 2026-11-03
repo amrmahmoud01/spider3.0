@@ -6,6 +6,21 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+DB_PORT = os.getenv('DB_PORT') 
+DB_HOST = os.getenv('DB_HOST')
+DB_USER = os.getenv('DB_USER')
+DB_PASS = os.getenv('DB_PASS')
+DB_NAME = os.getenv('DB_NAME')
+
+print("ENV VARS:", DB_PORT, DB_HOST, DB_USER, DB_PASS, DB_NAME)
+
+SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
+
 
 BOT_NAME = "spider3_0"
 
@@ -65,9 +80,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "spider3_0.pipelines.Spider30Pipeline": 300,
-#}
+ITEM_PIPELINES = {
+   "spider3_0.pipelines.SpiderPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
