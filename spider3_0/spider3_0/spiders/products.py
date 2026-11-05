@@ -4,6 +4,10 @@ from scrapy import Request
 from web_poet import ItemPage
 import json, os
 
+
+## TO RUN THIS SPIDER:
+
+## scrapy crawl products -a config=[storeName]Config.json 
 class ProductsExtractor(scrapy.Spider):
     name = "products"
 
