@@ -28,9 +28,10 @@ SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 # DOWNLOADER_CLIENT_TLS_CIPHERS = "TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256"
 
 # Experimental HTTP/2 (Chrome uses HTTP/2)
-DOWNLOAD_HANDLERS = {
-    "https": "scrapy.core.downloader.handlers.http2.H2DownloadHandler",
+DOWNLOAD_HANDLERS_BY_NAME = {
+    "h2": "scrapy.core.downloader.handlers.http2.H2DownloadHandler",
 }
+
 
 BOT_NAME = "spider3_0"
 

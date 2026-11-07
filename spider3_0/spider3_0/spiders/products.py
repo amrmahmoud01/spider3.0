@@ -11,9 +11,10 @@ import json, os
 class ProductsExtractor(scrapy.Spider):
     name = "products"
 
-    def __init__(self, config=None, *args, **kwargs):
+    def __init__(self, config=None, h2=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config = config  # Captures CLI arg: -a json_file="urls.json"
+        self.req_meta = {"download_handler": "h2"} if str(h2).lower() in ("1", "true") else {}
 
     async def start(self):
         if not self.config:
@@ -37,7 +38,8 @@ class ProductsExtractor(scrapy.Spider):
                     yield Request(
                         url = productLink, 
                         cb_kwargs={"gender": gender, "category": x},
-                        callback=self.parse
+                        callback=self.parse,
+                        meta=self.req_meta, 
                         )
 
 
@@ -68,11 +70,11 @@ class ProductsExtractor(scrapy.Spider):
         products = await page.to_item()
         for url in products["urls"]:
             # print(url)
-            yield scrapy.Request(url, callback=self.parseProduct, cb_kwargs={"category": category, "gender":gender})
+            yield scrapy.Request(url, callback=self.parseProduct, meta=self.req_meta, cb_kwargs={"category": category, "gender":gender})
             
         # If the page object found a next page link, follow it to collect more product links.
         next_page = products.get("next_page")
         
         if next_page:
             # Scrapy will schedule this request and the web_poet middleware will provide an ItemPage for the callback.
-            yield scrapy.Request(next_page, callback=self.parse, cb_kwargs={"category": category, "gender":gender})
+            yield scrapy.Request(next_page, callback=self.parse, meta=self.req_meta,  cb_kwargs={"category": category, "gender":gender})
