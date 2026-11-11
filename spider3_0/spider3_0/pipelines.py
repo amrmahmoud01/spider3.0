@@ -30,9 +30,9 @@ class SpiderPipeline:
         try:
             with self.engine.connect() as conn:
                 result = conn.execute((text("SELECT 1")))
-                print("✅ DB connection successful:", result.fetchone())
+                print("DB connection successful:", result.fetchone())
         except Exception as e:
-            print("❌ DB connection failed:", e)
+            print("DB connection failed:", e)
         self.session = None
         # Keep in-memory cache of product-color pairs to avoid duplicates in one run
         self.existing_colors_cache = set()
@@ -52,7 +52,7 @@ class SpiderPipeline:
         return cls(db_url)
     
     def open_spider(self, spider):
-        print("🚀 SpiderPipeline INITIALIZED")
+        print("SpiderPipeline INITIALIZED")
         self.session = Session(self.engine)
 
 
@@ -72,7 +72,7 @@ class SpiderPipeline:
 
             # 1. SAFETY CHECK: Ensure the session exists before proceeding
             if self.session is None:
-                spider.logger.error("❌ Database Session is None. check open_spider logic.")
+                spider.logger.error("Database Session is None. check open_spider logic.")
                 return
 
             try:
@@ -156,7 +156,7 @@ class SpiderPipeline:
             except Exception as e:
                 # If ANY part of the 100-item batch fails, we undo the whole thing
                 self.session.rollback()
-                spider.logger.error(f"❌ Batch Failed: {e}")
+                spider.logger.error(f"Batch Failed: {e}")
                 # Optional: clear buffer anyway to prevent infinite loops on bad data
                 self.items_buffer.clear()
 

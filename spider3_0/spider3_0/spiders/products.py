@@ -2,6 +2,7 @@ import scrapy
 from scrapling.integrations.scrapy import scrapling_response
 from scrapy import Request
 from web_poet import ItemPage
+from importlib.resources import files
 import json, os
 
 
@@ -21,28 +22,22 @@ class ProductsExtractor(scrapy.Spider):
             self.logger.error("NEED TO PROVIDE CONFIG FILE")
             return
 
-        spider_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(spider_dir, '..', 'configs')
+        try:
+            text = (files("spider3_0") / "configs" / self.config).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            self.logger.error("Config %s not found in package", self.config)
+            return
 
-        config_path = os.path.normpath(
-        os.path.join(spider_dir, "..", "configs", self.config)
-    )
+        file = json.loads(text)
 
-        with open(config_path) as f:
-            file = json.load(f)
-
-            for x,y in file[0].items():
-                for item in y["urls"]:
-                    productLink = item["url"]
-                    gender = item["gender"]
-                    yield Request(
-                        url = productLink, 
-                        cb_kwargs={"gender": gender, "category": x},
-                        callback=self.parse,
-                        meta=self.req_meta, 
-                        )
-
-
+        for x, y in file[0].items():
+            for item in y["urls"]:
+                yield Request(
+                    url=item["url"],
+                    cb_kwargs={"gender": item["gender"], "category": x},
+                    callback=self.parse,
+                    meta=self.req_meta,
+                )
 
     async def parseProduct(self, response, page: ItemPage, category, gender):
         """Callback to extract product details using web-poet page objects

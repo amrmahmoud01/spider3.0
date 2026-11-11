@@ -21,7 +21,7 @@ print("TEST MARKER")
 
 # print("ENV VARS:", DB_PORT, DB_HOST, DB_USER, DB_PASS, DB_NAME)
 
-SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
+# SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 
 
 # Change the cipher list offered in the handshake
