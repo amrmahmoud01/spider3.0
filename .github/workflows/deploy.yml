@@ -1,0 +1,29 @@
+name: Deploy Scrapy Project
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deploy tools
+        run: pip install setuptools wheel scrapyd-client
+
+      - name: Deploy to Scrapyd
+        env:
+          SCRAPYD_URL: ${{ secrets.SCRAPYD_URL }}
+          SCRAPYD_USERNAME: ${{ secrets.SCRAPYD_USERNAME }}
+          SCRAPYD_PASSWORD: ${{ secrets.SCRAPYD_PASSWORD }}
+        working-directory: spider3_0
+        run: scrapyd-deploy
