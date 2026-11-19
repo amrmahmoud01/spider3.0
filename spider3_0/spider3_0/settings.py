@@ -21,7 +21,7 @@ print("TEST MARKER")
 
 # print("ENV VARS:", DB_PORT, DB_HOST, DB_USER, DB_PASS, DB_NAME)
 
-# SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
+SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 
 
 # Change the cipher list offered in the handshake
@@ -84,11 +84,22 @@ DOWNLOAD_DELAY = 0.5
 #    "spider3_0.middlewares.Spider30SpiderMiddleware": 543,
 #}
 
+
+
+# Add In The ScrapeOps Extension
+EXTENSIONS = {
+'scrapeops_scrapy.extension.ScrapeOpsMonitor': 500, 
+}
+
+
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
+
 DOWNLOADER_MIDDLEWARES = {
 #    "spider3_0.middlewares.Spider30DownloaderMiddleware": 543,
    "scrapy_poet.InjectionMiddleware": 543,
+   'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550,
+   'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
 }
 
 # Enable or disable extensions
