@@ -26,4 +26,4 @@ jobs:
           SCRAPYD_USERNAME: ${{ secrets.SCRAPYD_USERNAME }}
           SCRAPYD_PASSWORD: ${{ secrets.SCRAPYD_PASSWORD }}
         working-directory: spider3_0
-        run: scrapyd-deploy
+        run: scrapyd-deploy server
