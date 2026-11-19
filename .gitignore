@@ -5,3 +5,4 @@ venv
 build/
 project.egg-info/
 dbs/
+spider3_0.egg-info

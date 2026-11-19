@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 2. Copy the rest of the project files
-COPY . .
+# COPY . .
 
 # 3. Create a dedicated healthcheck script file
 RUN echo "import urllib.request; urllib.request.urlopen('http://localhost:6800/daemonstatus.json')" > /app/healthcheck.py
